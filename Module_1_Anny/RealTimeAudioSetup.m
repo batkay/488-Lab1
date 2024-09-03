@@ -8,7 +8,7 @@
 fs = 48e3; % sample frequency
 audioFrameRate = 20; 
 dataPrecision = '16-bit integer'; 
-adr = audioDeviceReader('Device','Microphone (Sound Blaster Play! 3)','SampleRate',fs,'SamplesPerFrame',floor(fs/audioFrameRate),'BitDepth',dataPrecision);
+adr = audioDeviceReader('Device','Aggregate Device','SampleRate',fs,'SamplesPerFrame',floor(fs/audioFrameRate),'BitDepth',dataPrecision);
 
 % note: other options available in audioDeviceReader, e.g., selection of audio device, driver 
 
@@ -57,7 +57,7 @@ release(adr)
 release(audioBuffer)
 
 %% 
-audioLatencyMeasurementExampleApp('SamplesPerFrame',[32 1024],'SampleRate',96e3,'Plot',true)
+audioLatencyMeasurementImpulseApp('SamplesPerFrame',32,'SampleRate',48e3,'Plot',true,'Device','Aggregate Device')
 
 % %% frequency analysis
 % [N, numFrames] =size(y);

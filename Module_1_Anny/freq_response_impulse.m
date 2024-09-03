@@ -3,20 +3,20 @@ clear all;
 close all;
 clc;
 %% Setup
-fs = 96e3; 
+fs = 48e3; 
 duration = 5;
-samplesPerFrame = 1024; 
-adr = audioDeviceReader('Device','Microphone (Sound Blaster Play! 3)','SampleRate', fs, 'SamplesPerFrame', samplesPerFrame);
+samplesPerFrame = 32; 
+adr = audioDeviceReader('Device','Aggregate Device','SampleRate', fs, 'SamplesPerFrame', samplesPerFrame);
 
 t = 0:1/fs:duration-1/fs; % Time vector
 
 % impulse train
-% impulse_freq = 500;
-% impulse_train = zeros(size(t)); 
-% period_samples = fs / impulse_freq; 
-% impulse_train(1:period_samples:length(t)) = 1;
-% plot(t,impulse_train)
-% sound(impulse_train, fs);
+impulse_freq = 500;
+impulse_train = zeros(size(t)); 
+period_samples = fs / impulse_freq; 
+impulse_train(1:period_samples:length(t)) = 1;
+plot(t,impulse_train)
+sound(impulse_train, fs);
 
 % Store the recorded audio
 numFrames = floor(duration * fs / samplesPerFrame);
@@ -45,7 +45,7 @@ grid on;
 Y_amb = fft(ambient_noise);
 N = length(Y_amb);
 Y_amb = Y_amb(1:N/2+1);
-% Compute the frequency vector based on the actual length of the FFT
+% Compute the frequency vector 
 f = 0:fs/N:fs/2; % Frequency vector
 
 %%  Plot frequency response
