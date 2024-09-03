@@ -1,0 +1,52 @@
+clear all;
+close all;
+clc;
+%% 
+
+% Setup
+fs = 96e3; % Sampling frequency
+duration = 5; % Duration in seconds
+
+samplesPerFrame =32; % Number of samples per frame
+adr = audioDeviceReader('Device','Microphone (Sound Blaster Play! 3)','SampleRate', fs, 'SamplesPerFrame', samplesPerFrame);
+
+f_sin = 1000; % Frequency of the sinusoidal input (1 kHz)
+t = 0:1/fs:duration-1/fs; % Time vector for the sinusoid
+
+% Generate the sinusoidal signal
+sinusoidal_input = sin(2*pi*f_sin*t);
+
+%  store the recorded audio
+numFrames = duration * fs / samplesPerFrame;
+ambient_noise = zeros(numFrames * samplesPerFrame, 1);
+
+% Record ambient noise
+disp('Recording ambient noise...');
+ 
+for i = 1:numFrames
+    audioFrame = adr(); % Read a frame of audio samples
+    ambient_noise((i-1)*samplesPerFrame + 1 : i*samplesPerFrame) = audioFrame;
+
+end
+
+disp('Finished recording ambient noise.');
+release(adr);
+
+% Plot the recorded ambient noise
+t = (0:length(ambient_noise)-1) / fs; % Time vector
+figure;
+plot(t, ambient_noise);
+xlabel('Time (s)');
+ylabel('Amplitude');
+title('Ambient Noise Recording');
+grid on;
+
+%% Freqency reponse for no input
+
+Y_amb = fft(ambient_noise);
+f = (0:length(Y_amb)-1)*(fs/length(Y_amb)); % Frequency vector
+figure;
+plot(f, abs(Y_amb));
+title('Frequency Response - Ambient  ');
+xlabel('Frequency (Hz)');
+ylabel('Amplitude');
