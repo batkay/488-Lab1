@@ -133,7 +133,7 @@ Buffer  = dsp.AsyncBuffer((Ntrials+1)*NFrames*frameSize);
 fileReader.SamplesPerFrame = NFrames*frameSize;
 audioOut = fileReader();
 audioOut = audioOut(:,1); % Keep only first channel
-time = (0:1/SampleRate:3-1/SampleRate)';
+time = (0:1/SampleRate:playDuration-1/SampleRate)';
 f = 10;
 audioOut = square(2*pi*f*time);
 

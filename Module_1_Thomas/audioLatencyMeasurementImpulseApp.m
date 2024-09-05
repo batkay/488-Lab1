@@ -1,4 +1,4 @@
-function t  = audioLatencyMeasurementSineApp(varargin)
+function t  = audioLatencyMeasurementImpulseApp(varargin)
 %AUDIOLATENCYMEASUREMENTEXAMPLEAPP Measure audio latency by using a
 %loopback audio cable to connect the audio-out port to audio-in port.
 %
@@ -133,9 +133,16 @@ Buffer  = dsp.AsyncBuffer((Ntrials+1)*NFrames*frameSize);
 fileReader.SamplesPerFrame = NFrames*frameSize;
 audioOut = fileReader();
 audioOut = audioOut(:,1); % Keep only first channel
+
+
 time = (0:1/SampleRate:playDuration-1/SampleRate)';
-f = 10;
-audioOut = sin(time*2*pi*f);
+impulse_freq = 10;
+impulse_train = zeros(size(time)); 
+period_samples = SampleRate / impulse_freq; 
+impulse_train(1:period_samples:length(time)) = 1;
+audioOut = impulse_train;
+
+
 for k = 1:Ntrials+1
     write(Buffer,audioOut);   % Initialize Buffer
 end
@@ -220,12 +227,34 @@ if plotflag
     xlabel('Time (in sec)');
     ylabel('correlation');
     axis([-3 3 -1000 2000]);
+    
+    % Out input freqency respones
+    Y_amb = fft(loopbackAudio);
+    N = length(Y_amb);
+    Y_amb = Y_amb(1:N/2+1);
+    % Compute the frequency vector 
+    f = 0:SampleRate/N:SampleRate/2; % Frequency vector
+    figure;
+    plot(f, abs(Y_amb));
+    
+    title('Frequency Response - Ambient');
+    xlabel('Frequency (Hz)');
+    ylabel('Amplitude');
+    xlim([0 SampleRate/2]); % Limit x-axis to Nyquist frequency
+    grid on;
 
-    psd_plot(loopbackAudio, SampleRate)
+    psdx = (1/(SampleRate*length(Y_amb))) * abs(Y_amb).^2;
+    psdx(2:end-1) = 2*psdx(2:end-1);
+    figure;
+    plot(f,pow2db(psdx))
+    grid on
+    title("Power Spectral Density")
+    xlabel("Frequency (Hz)")
+    ylabel("Power/Frequency (dB/Hz)")
+
 end
 
 %% Cleanup
 release(fileReader); % release the input file
 release(syncAudioDevice);  
-
 
