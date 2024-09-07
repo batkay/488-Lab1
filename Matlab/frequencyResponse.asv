@@ -1,4 +1,4 @@
-frequencySet = [1, 10, 100, 250, 500, 1e3, 2e3, 5e3, 1e4, 1.5e4, 2e4];
+frequencySet = [1, 5, 10, 20, 50, 75, 100, 250, 500, 1e3, 2e3, 5e3, 7e3, 1e4, 1.5e4, 2e4];
 gainSet = zeros(1, length(frequencySet));
 fs = 48e3;
 for i = 1:length(frequencySet)
@@ -11,7 +11,7 @@ fout = fft(output);
 fout = fout(1:N/2+1);
 
 freq = 0:fs/N:fs/2;
-idx = find(freq == i);
+idx = find(freq == frequencySet(i);
 gain = fout(idx)/fin(idx);
 
 gainSet(i) = gain;
@@ -31,6 +31,6 @@ ylabel("Gain (dB)")
 subplot(2, 1, 2)
 plot(frequencySet', phase);
 xscale log;
-title("Pha")
+title("Phase vs Frequency")
 xlabel("Frequency (Hz)")
 ylabel("Phase (degrees)")
