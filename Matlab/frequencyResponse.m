@@ -1,4 +1,4 @@
-frequencySet = [1, 10, 100, 250, 500, 1e3, 2e3, 5e3, 1e4, 2e4, 4e4];
+frequencySet = [1, 10, 100, 250, 500, 1e3, 2e3, 5e3, 1e4, 1.5e4, 2e4];
 gainSet = zeros(1, length(frequencySet));
 fs = 48e3;
 for i = 1:length(frequencySet)
@@ -22,8 +22,15 @@ phase = rad2deg(angle(gainSet));
 
 figure;
 subplot(2, 1, 1)
-xscale log;
 plot(frequencySet', mag);
-subplot(2, 1, 2)
 xscale log;
+title("Amplitude vs Frequency")
+xlabel("Frequency (Hz)")
+ylabel("Gain (dB)")
+
+subplot(2, 1, 2)
 plot(frequencySet', phase);
+xscale log;
+title("Phase vs Frequency")
+xlabel("Frequency (Hz)")
+ylabel("Phase (degrees)")
