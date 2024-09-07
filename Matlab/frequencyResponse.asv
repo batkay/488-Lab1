@@ -1,0 +1,28 @@
+
+
+frequencySet = [1, 10, 100, 250, 500, 1e3, 2e3, 5e3, 1e4, 2e4, 4e4];
+gainSet =
+fs = 48e3;
+for i = frequencySet
+[~, input, output] = audioLatencyMeasurementSineApp('SamplesPerFrame',64,'SampleRate',fs, 'Plot', false, 'Frequency', i, 'Device', 'Aggregate Device');
+
+N = length(output);
+fin = fft(input);
+fin = fin(1:N/2+1);
+fout = fft(output);
+fout = fout(1:N/2+1);
+
+freq = 0:fs/N:fs/2;
+idx = find(freq == i);
+gain = fout(idx)/fin(idx);
+
+gainSet = [gainSet; gain];
+count = [count; i];
+end
+
+ratio = 20*log10(gainSet);
+
+figure;
+subplot(2, 1, 1)
+plot(frequencySet', abs(ratio));
+plot(frequencySet', phase(ratio));

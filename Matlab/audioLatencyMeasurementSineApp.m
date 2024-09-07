@@ -1,4 +1,4 @@
-function t  = audioLatencyMeasurementSineApp(varargin)
+function [t, audioOut, loopbackAudio]  = audioLatencyMeasurementSineApp(varargin)
 %AUDIOLATENCYMEASUREMENTEXAMPLEAPP Measure audio latency by using a
 %loopback audio cable to connect the audio-out port to audio-in port.
 %
@@ -43,6 +43,7 @@ p.addParameter('SampleRate',48e3); %SampleRate = [44.1e3,48e3,88.2e3,96e3];
 p.addParameter('Device','Default');
 p.addParameter('IOChannels',[1 1]);
 p.addParameter('Plot',false);
+p.addParameter('Frequency', 10); %Hz
 
 p.parse(varargin{:});
 res = p.Results;
@@ -54,6 +55,7 @@ SampleRate      = res.SampleRate;
 L               = res.FilterLength;
 plotflag        = res.Plot;
 SamplesPerFrame = res.SamplesPerFrame;
+frequency = res.Frequency;
 
 validateattributes(Ntrials,{'numeric'},{'positive', 'integer', 'scalar','<=', 5},...
     'audioLatencyMeasurementExampleApp','Ntrials');
@@ -73,6 +75,8 @@ validateattributes(SamplesPerFrame,{'numeric'},{'positive', 'finite','integer','
 validateattributes(plotflag,{'logical'},{'scalar'},...
     'audioLatencyMeasurementExampleApp','Plot');
 
+validateattributes(frequency,{'numeric'},{'positive', 'finite','vector'},...
+    'audioLatencyMeasurementExampleApp','Frequency');
 
 Lb = length(SamplesPerFrame);
 Lf = length(SampleRate);
@@ -80,7 +84,7 @@ Lf = length(SampleRate);
 t = [];
 for k = 1:Lb
     for m = 1:Lf
-        r = ...
+        [r, audioOut, loopbackAudio] = ...
             latencyMeasurementTrial('SamplesPerFrame',SamplesPerFrame(k),'FilterLength',L,...
             'Device',device,'Plot',false,'IOChannels',iochannels,'SampleRate',SampleRate(m),...
             'Ntrials',Ntrials,'Plot',plotflag);
@@ -88,7 +92,7 @@ for k = 1:Lb
     end
 end
 
-function r = latencyMeasurementTrial(varargin)
+function [r, audioOut, loopbackAudio] = latencyMeasurementTrial(varargin)
 
 p = inputParser; 
 
@@ -99,6 +103,7 @@ p.addParameter('Device','Default');
 p.addParameter('IOChannels',[1 1]);
 p.addParameter('Plot',false);
 p.addParameter('Ntrials',1);
+p.addParameter('Frequency', 10);
 
 p.parse(varargin{:});
 res = p.Results;
@@ -110,6 +115,7 @@ plotflag   = res.Plot;
 device     = res.Device;
 iochannels = res.IOChannels;
 Ntrials     = res.Ntrials;
+f = res.Frequency;
 
 % Audio file to read from:
 fileReader = dsp.AudioFileReader('RockDrums-48-stereo-11secs.mp3', ...
@@ -134,7 +140,6 @@ fileReader.SamplesPerFrame = NFrames*frameSize;
 audioOut = fileReader();
 audioOut = audioOut(:,1); % Keep only first channel
 time = (0:1/SampleRate:playDuration-1/SampleRate)';
-f = 10;
 audioOut = sin(time*2*pi*f);
 for k = 1:Ntrials+1
     write(Buffer,audioOut);   % Initialize Buffer
