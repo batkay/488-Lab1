@@ -139,7 +139,7 @@ time = (0:1/SampleRate:playDuration-1/SampleRate)';
 impulse_freq = 10;
 impulse_train = zeros(size(time)); 
 period_samples = SampleRate / impulse_freq; 
-impulse_train(1:period_samples:length(time)) = 1;
+impulse_train(1:period_samples:length(time)) = 10;
 audioOut = impulse_train;
 
 
@@ -228,30 +228,7 @@ if plotflag
     ylabel('correlation');
     axis([-3 3 -1000 2000]);
     
-    % Out input freqency respones
-    Y_amb = fft(loopbackAudio);
-    N = length(Y_amb);
-    Y_amb = Y_amb(1:N/2+1);
-    % Compute the frequency vector 
-    f = 0:SampleRate/N:SampleRate/2; % Frequency vector
-    figure;
-    plot(f, abs(Y_amb));
-    
-    title('Frequency Response - Ambient');
-    xlabel('Frequency (Hz)');
-    ylabel('Amplitude');
-    xlim([0 SampleRate/2]); % Limit x-axis to Nyquist frequency
-    grid on;
-
-    psdx = (1/(SampleRate*length(Y_amb))) * abs(Y_amb).^2;
-    psdx(2:end-1) = 2*psdx(2:end-1);
-    figure;
-    plot(f,pow2db(psdx))
-    grid on
-    title("Power Spectral Density")
-    xlabel("Frequency (Hz)")
-    ylabel("Power/Frequency (dB/Hz)")
-
+    psd_plot(loopbackAudio, SampleRate)
 end
 
 %% Cleanup
