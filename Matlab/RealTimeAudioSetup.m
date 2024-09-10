@@ -59,6 +59,9 @@ psd_plot(y(:,i - 1), fs);
 % Release audio objects 
 release(adr)
 release(audioBuffer)
+
+
+
 %% 
 
-audioLatencyMeasurementImpulseApp('Device',"Aggregate Device",'SampleRate',fs,'SamplesPerFrame',64,"Plot",true);
+audioLatencyMeasurementSquareApp('Device',"Aggregate Device",'SampleRate',fs,'SamplesPerFrame',64,"Plot",true);

@@ -134,17 +134,13 @@ fileReader.SamplesPerFrame = NFrames*frameSize;
 % audioOut = fileReader();
 % audioOut = audioOut(:,1); % Keep only first channel
 time = (0:1/SampleRate:playDuration-1/SampleRate)';
-f = 10;
-audioOut = square(2*pi*f*time);
-% [signal, originalFs] = audioread('badfeeling.m4a');
-% audioOut_re = resample(signal, SampleRate, originalFs);
-% len_re = length(audioOut_re);
-% len_time = length(time);
-% if len_re < len_time
-%     audioOut = [audioOut_re(:,1);zeros(len_time-len_re,1)];
-% else
-%     audioOut = audioOut_re(1:len_time,1);
-% end
+% f = 10;
+% audioOut = square(2*pi*f*time);
+[signal, originalFs] = audioread('badfeeling.m4a');
+audioOut_re = resample(signal, SampleRate, originalFs);
+size
+if audioOut_re
+audioOut = audioOut_re(1:length(time),2) ;
 
 for k = 1:Ntrials+1
     write(Buffer,audioOut);   % Initialize Buffer

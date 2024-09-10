@@ -33,8 +33,7 @@ function SNR =signal2noise(x,noise,fs)
 end
 
 function SNR = signal2noise_freq_dependent(x, noise, fs)
-    N = length(x);
-    freq = linspace(0, fs/2, floor(N/2)+1)
+ 
     [~, P_signal] = psd_calculation(x, fs);
     [~, P_noise] = psd_calculation(noise, fs);
     
