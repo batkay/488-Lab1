@@ -7,4 +7,4 @@ x = chirp(time,10,3,2000, 'quadratic');
 
 % x = sin(time*2*pi*f);
 
-spectro(x, SampleRate);
+spectro(x, SampleRate, 1000, 750, 500);
