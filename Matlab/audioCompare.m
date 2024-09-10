@@ -38,4 +38,4 @@ xlabel("Time (s)");
 ylabel("Amplitude");
 
 psd_plot(mel_2, fs_2);
-spectro(mel_2, fs_2);
+spectro(mel_def, fs_def);
