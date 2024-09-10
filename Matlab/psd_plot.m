@@ -50,6 +50,14 @@ function SNR = signal2noise_freq_dependent(x, noise, fs)
     end
 end
 
+function SNR = signal2noise_mean_method(signal,fs)
+    noise_estimate = signal - mean(signal);
+    P_noise = var(noise_estimate);
+    P_signal = bandpower(signal);
+
+    SNR = 20 * log10(P_signal/P_noise); % SNR
+
+end
 function dynamic_range = calculate_dynamic_range(psdx)
     max_power = max(psdx);
     min_power = min(psdx); % Avoid log of zero

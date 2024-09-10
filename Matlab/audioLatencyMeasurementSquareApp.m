@@ -111,6 +111,8 @@ device     = res.Device;
 iochannels = res.IOChannels;
 Ntrials     = res.Ntrials;
 
+% loopbackAudio = playAndRecordLoopback(audioOut, SampleRate, frameSize, device, iochannels, duration);
+
 % Audio file to read from:
 fileReader = dsp.AudioFileReader('RockDrums-48-stereo-11secs.mp3', ...
     'SamplesPerFrame', frameSize);
@@ -180,6 +182,7 @@ end
 
 fprintf('Trial(s) done for frameSize %d. \n',frameSize);
 
+
 % Compute cross-correlation and plot
 read(Buffer,NFrames*frameSize);
 latency = zeros(Ntrials,1);
@@ -230,11 +233,12 @@ if plotflag
     xlabel('Time (in sec)');
     ylabel('correlation');
     axis([-3 3 -1000 2000]);
-
+    
     psd_plot(loopbackAudio, SampleRate)
 
 
 end
+
 
 %% Cleanup
 release(fileReader); % release the input file

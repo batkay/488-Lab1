@@ -55,13 +55,13 @@ while ishandle(h) && toc < timeLimit
     i = i+1; 
 
 end
-psd_plot(y(:,i - 1), fs);
+% psd_plot(y(:,i - 1), fs);
 % Release audio objects 
 release(adr)
 release(audioBuffer)
 
 
 
-%% 
-
+%% =
 audioLatencyMeasurementSquareApp('Device',"Aggregate Device",'SampleRate',fs,'SamplesPerFrame',64,"Plot",true);
+% recordLoopbackAudio('Device',"Aggregate Device",'SampleRate',fs,'SamplesPerFrame',64,"Plot",true);
