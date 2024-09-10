@@ -3,6 +3,7 @@
 [data3, fs3] = audioread("audio/badfeelingbb8.wav");
 
 [mel_def, fs_def] = audioread("audio/Melon_default.wav");
+[mel_2, fs_2] = audioread("audio/Melon_2.wav");
 [mel_deep, fs_deep] = audioread("audio/Melon_deep.wav");
 [mel_fast, fs_fast] = audioread("audio/Melon_fast.wav");
 [mel_whis, fs_whis] = audioread("audio/Melon_whisper.wav");
@@ -18,8 +19,9 @@ mel_def = mel_def(:, 1);
 mel_deep = mel_deep(:, 1);
 mel_fast = mel_fast(:, 1);
 mel_whis = mel_whis(:, 1);
+mel_2 = mel_2(:, 1);
 
-[c, lags] = xcorr(mel_def, mel_deep);
+[c, lags] = xcorr(mel_def, mel_2, 10);
 
 figure;
 plot(lags, c);
@@ -28,16 +30,12 @@ xlabel("Lag (s)");
 ylabel("Correlation");
 
 
-t = 0:1/fs_def:((length(mel_def)-1)/fs_def);
+t = 0:1/fs_2:((length(mel_2)-1)/fs_2);
 figure;
-plot(t, mel_def);
+plot(t, mel_2);
 title("Data Signal");
 xlabel("Time (s)");
 ylabel("Amplitude");
 
-psd_plot(mel_def, fs_def);
-spectro(mel_def, fs_def);
-
-spectro(data1, fs1);
-spectro(data2, fs2);
-spectro(data3, fs3);
+psd_plot(mel_2, fs_2);
+spectro(mel_2, fs_2);
