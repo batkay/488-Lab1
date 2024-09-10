@@ -1,10 +1,11 @@
-function[spec] = spectro(x, fs, windowSize, overlap, fftLen)
+function[spec] = spectro(x, fs, windowSize, overlap, fftLen, windowType)
 arguments
     x;
     fs;
     windowSize = 1000; % number of samples per window
-    overlap = 0;
-    fftLen = windowSize;
+    overlap = 0; % number of samples from previous window to use
+    fftLen = windowSize; % how many samples to use in fft
+    windowType = @hann; % windowing function
 end
 N = length(x);
 i = 1;
@@ -16,13 +17,13 @@ freq = 0:fs/fftLen:fs/2;
 
 
 while i + windowSize < N
-    hanningWindow = hann(windowSize);
+    hanningWindow = windowType(windowSize);
     sig = x(i:i+windowSize - 1, :) .* hanningWindow;
     tempFft = fft(sig, fftLen)/fftLen;
     tempFft = tempFft(1:fftLen/2+1);
-    
+    tempFft = 20*log10(abs(tempFft) ./ freq');
 
-    time = i * fs;
+    time = i * 1/fs;
 
     times = [times; time];
     windows = [windows; tempFft'];
@@ -32,13 +33,13 @@ while i + windowSize < N
 end
 
 figure;
-imagesc(times, freq, abs(windows'), 'CDataMapping','scaled');
+imagesc(times, freq, windows', 'CDataMapping','scaled');
 colormap('jet');
 axis('xy');
 colorbar;
-
-figure;
-plot(freq, abs(tempFft));
+xlabel("Time (s)");
+ylabel("Frequency (Hz)");
+title("Spectrogram");
 
 spec = windows';
 

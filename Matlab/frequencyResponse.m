@@ -25,13 +25,13 @@ figure;
 subplot(2, 1, 1)
 plot(frequencySet', mag);
 xscale log;
-title("Amplitude vs Frequency")
-xlabel("Frequency (Hz)")
-ylabel("Gain (dB)")
+title("Amplitude vs Frequency");
+xlabel("Frequency (Hz)");
+ylabel("Gain (dB)");
 
 subplot(2, 1, 2)
 plot(frequencySet', phase);
 xscale log;
-title("Phase vs Frequency")
-xlabel("Frequency (Hz)")
-ylabel("Phase (degrees)")
+title("Phase vs Frequency");
+xlabel("Frequency (Hz)");
+ylabel("Phase (degrees)");
