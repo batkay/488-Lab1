@@ -1,4 +1,4 @@
-function t  = audioLatencyMeasurementSineApp(varargin)
+function t  = audioLatencyMeasurementSquareApp(varargin)
 %AUDIOLATENCYMEASUREMENTEXAMPLEAPP Measure audio latency by using a
 %loopback audio cable to connect the audio-out port to audio-in port.
 %
@@ -7,11 +7,11 @@ function t  = audioLatencyMeasurementSineApp(varargin)
 %
 % Optional Inputs (Name/Value pairs):
 %   AUDIOLATENCYMEASUREMENTEXAMPLEAPP(...,'SamplesPerFrame',BufferSize)
-%       BufferSize can be a vector of different values to try. 
+%       BufferSize can be a vector of different values to try.
 %       Defaults to 96.
 %   AUDIOLATENCYMEASUREMENTEXAMPLEAPP(...,'SampleRate',Fs)
 %       Fs can be a vector of sample rates to try.
-%       Defaults to 48000 (48 kHz).   
+%       Defaults to 48000 (48 kHz).
 %   AUDIOLATENCYMEASUREMENTEXAMPLEAPP(...,'Device',MyDevice)
 %       MyDevice is a string with the name of the device to be used.
 %       Defaults to the system default device.
@@ -27,7 +27,7 @@ function t  = audioLatencyMeasurementSineApp(varargin)
 %   AUDIOLATENCYMEASUREMENTEXAMPLEAPP(...,'Plot',flag)
 %       flag is a boolean indicating whether to plot the measurements.
 %       Defaults to false.
-% Output: 
+% Output:
 %   A table with latency in milliseconds for each trial.
 %
 % This function is an example only. It may change in a future release.
@@ -90,7 +90,7 @@ end
 
 function r = latencyMeasurementTrial(varargin)
 
-p = inputParser; 
+p = inputParser;
 
 p.addParameter('FilterLength',1);
 p.addParameter('SampleRate',48e3);
@@ -111,9 +111,11 @@ device     = res.Device;
 iochannels = res.IOChannels;
 Ntrials     = res.Ntrials;
 
+% loopbackAudio = playAndRecordLoopback(audioOut, SampleRate, frameSize, device, iochannels, duration);
+
 % Audio file to read from:
 fileReader = dsp.AudioFileReader('RockDrums-48-stereo-11secs.mp3', ...
-                'SamplesPerFrame', frameSize);
+    'SamplesPerFrame', frameSize);
 playDuration = 3;
 
 % Audio IO:
@@ -131,11 +133,20 @@ Buffer  = dsp.AsyncBuffer((Ntrials+1)*NFrames*frameSize);
 
 % Store audio in Buffer to not have disk access in the loop
 fileReader.SamplesPerFrame = NFrames*frameSize;
-audioOut = fileReader();
-audioOut = audioOut(:,1); % Keep only first channel
+% audioOut = fileReader();
+% audioOut = audioOut(:,1); % Keep only first channel
 time = (0:1/SampleRate:playDuration-1/SampleRate)';
 f = 10;
 audioOut = square(2*pi*f*time);
+% [signal, originalFs] = audioread('badfeeling.m4a');
+% audioOut_re = resample(signal, SampleRate, originalFs);
+% len_re = length(audioOut_re);
+% len_time = length(time);
+% if len_re < len_time
+%     audioOut = [audioOut_re(:,1);zeros(len_time-len_re,1)];
+% else
+%     audioOut = audioOut_re(1:len_time,1);
+% end
 
 for k = 1:Ntrials+1
     write(Buffer,audioOut);   % Initialize Buffer
@@ -152,7 +163,7 @@ if L > 1
     r.FilterLength = L*ones(Ntrials,1);
 end
 r.Latency = NaN;
-    
+
 %% Loopback simulation
 
 % MATLAB simulation. Add an additional trial for warmup since there are
@@ -171,6 +182,7 @@ end
 
 fprintf('Trial(s) done for frameSize %d. \n',frameSize);
 
+
 % Compute cross-correlation and plot
 read(Buffer,NFrames*frameSize);
 latency = zeros(Ntrials,1);
@@ -179,7 +191,7 @@ for k = 1:Ntrials
     % Account for possible drops in the warmup run
     [temp,idx] = xcorr(audioOut,loopbackAudio(Underruns(1)+Overruns(1)+1:end));
     rxy = abs(temp);
-    
+
     [~,Midx] = max(rxy);
     latency(k) = -idx(Midx)*1/SampleRate;
 end
@@ -205,7 +217,7 @@ end
 %% Plot original and loopback signal
 if plotflag
     fprintf('Plotting... \n');
-    
+
     figure
     t = 1/SampleRate*(0:size(loopbackAudio,1)-1);
     subplot(2,1,1), plot(t,[audioOut,loopbackAudio])
@@ -215,18 +227,21 @@ if plotflag
     xlabel('Time (in sec)');
     ylabel('Audio signal');
     axis([0 3 -1 1]);
-        
+
     subplot(2,1,2), plot(1/SampleRate*((0:2*length(audioOut)-2)-length(audioOut)),temp)
     title('Cross correlation between played and received signals');
     xlabel('Time (in sec)');
     ylabel('correlation');
     axis([-3 3 -1000 2000]);
-
+    
     psd_plot(loopbackAudio, SampleRate)
+
+
 end
+
 
 %% Cleanup
 release(fileReader); % release the input file
-release(syncAudioDevice);  
+release(syncAudioDevice);
 
 

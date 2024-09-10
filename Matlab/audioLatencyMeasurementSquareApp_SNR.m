@@ -1,4 +1,4 @@
-function t  = audioLatencyMeasurementImpulseApp(varargin)
+function t  = audioLatencyMeasurementSquareApp_SNR(varargin)
 %AUDIOLATENCYMEASUREMENTEXAMPLEAPP Measure audio latency by using a
 %loopback audio cable to connect the audio-out port to audio-in port.
 %
@@ -43,6 +43,7 @@ p.addParameter('SampleRate',48e3); %SampleRate = [44.1e3,48e3,88.2e3,96e3];
 p.addParameter('Device','Default');
 p.addParameter('IOChannels',[1 1]);
 p.addParameter('Plot',false);
+
 
 p.parse(varargin{:});
 res = p.Results;
@@ -132,20 +133,13 @@ Buffer  = dsp.AsyncBuffer((Ntrials+1)*NFrames*frameSize);
 % Store audio in Buffer to not have disk access in the loop
 fileReader.SamplesPerFrame = NFrames*frameSize;
 audioOut = fileReader();
-audioOut = audioOut(:,1); % Keep only first channel
-
-
-time = (0:1/SampleRate:playDuration-1/SampleRate)';
-impulse_freq = 10;
-impulse_train = zeros(size(time)); 
-period_samples = SampleRate / impulse_freq; 
-impulse_train(1:period_samples:length(time)) = 10;
-audioOut = impulse_train;
+audioOut = zeros(size(audioOut(:,1))); % Keep only first channel
 
 
 for k = 1:Ntrials+1
     write(Buffer,audioOut);   % Initialize Buffer
 end
+
 
 % Design filter for algorithm loop
 b = fir1(L,.9);
@@ -229,9 +223,12 @@ if plotflag
     axis([-3 3 -1000 2000]);
     
     psd_plot(loopbackAudio, SampleRate)
+
+    
 end
 
 %% Cleanup
 release(fileReader); % release the input file
 release(syncAudioDevice);  
+
 
