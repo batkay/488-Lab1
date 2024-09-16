@@ -62,6 +62,7 @@ release(audioBuffer)
 
 
 
-%% =
-audioLatencyMeasurementSquareApp('Device',"Aggregate Device",'SampleRate',fs,'SamplesPerFrame',64,"Plot",true);
+%% testing
+Record_audioLatencyMeasurement('Device',"Aggregate Device",'SampleRate',fs,'SamplesPerFrame',64,"Plot",true);
+% Play_audioLatencyMeasurement('Device',"Aggregate Device",'SampleRate',fs,'SamplesPerFrame',64,"Plot",true);
 % recordLoopbackAudio('Device',"Aggregate Device",'SampleRate',fs,'SamplesPerFrame',64,"Plot",true);
