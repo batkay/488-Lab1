@@ -1,0 +1,15 @@
+[melon, fs_melon] = audioread("audio/Melon_default.wav");
+melon = melon(:, 1);
+[vader, fs_vader] = audioread("audio/Vader.wav");
+vader = vader(:, 1);
+[bat, fs_def] = audioread("audio/Melon_default.wav");
+bat = bat(:, 1);
+[drink, fs_] = audioread("audio/Melon_default.wav");
+drink = drink(:, 1);
+[wash, fs_wash] = audioread("audio/Melon_default.wav");
+wash = wash(:, 1);
+
+[audio_2, fs_2] = audioread("audio/Melon_3.m4a");
+audio_2 = audio_2(:, 1);
+
+compare(mel_def, audio_2);
