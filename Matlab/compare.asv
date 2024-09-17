@@ -69,7 +69,7 @@ end
     fft1 = abs(fft1)/ max(abs(fft1));
     fft2 = abs(fft2)/ max(abs(fft2));
 
-    c2 = max(abs(xcorr(fft1, fft2, 'normalized')));
+    c2 = max(axcorr(fft1, fft2, 'normalized');
     corr = corr + max(c2);
     if plot
         figure;
