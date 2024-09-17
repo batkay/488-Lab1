@@ -4,13 +4,13 @@
 [mel_AQ, fs_AQ] = audioread("word_melon.wav"); %recorded melon just repeat one time
 [amb,fs_amb] = audioread("ambient_noise.wav");
 % 
-% [~,PSD_AQ] = psd_plot.psd_calculation(mel_AQ, fs_AQ);
-% [~,PSD_amb] = psd_plot.psd_calculation(amb,fs_amb);
-% [~,PSD_def] = psd_plot.psd_calculation(mel_def, fs_def);
-% sum(PSD_amb)
-% sum(PSD_AQ)
-% sum(PSD_def)
-% 
+[~,PSD_AQ] = psd_plot.psd_calculation(mel_AQ, fs_AQ);
+[~,PSD_amb] = psd_plot.psd_calculation(amb,fs_amb);
+[~,PSD_def] = psd_plot.psd_calculation(mel_def, fs_def);
+sum(PSD_amb)
+sum(PSD_AQ)
+sum(PSD_def)
+
 % [c, lags] = xcorr(mel_def, mel_AQ, 10);
 % 
 % 

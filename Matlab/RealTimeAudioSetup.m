@@ -44,7 +44,7 @@ while ishandle(h) && toc < timeLimit
     [audioIn overrun(i)] = adr();
     write(audioBuffer,audioIn);
     y(:,i) = read(audioBuffer,fs,fs-adr.SamplesPerFrame);
-
+    
     % plot buffer (includes overlapping audio frames)
     plot(t,y(:,i))
     axis tight
