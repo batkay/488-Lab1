@@ -44,7 +44,7 @@ while ishandle(h) && toc < timeLimit
     [audioIn overrun(i)] = adr();
     write(audioBuffer,audioIn);
     y(:,i) = read(audioBuffer,fs,fs-adr.SamplesPerFrame);
-
+    
     % plot buffer (includes overlapping audio frames)
     plot(t,y(:,i))
     axis tight
@@ -62,6 +62,7 @@ release(audioBuffer)
 
 
 
-%% =
-audioLatencyMeasurementSquareApp('Device',"Aggregate Device",'SampleRate',fs,'SamplesPerFrame',64,"Plot",true);
+%% testing
+Record_audioLatencyMeasurement('Device',"Aggregate Device",'SampleRate',fs,'SamplesPerFrame',64,"Plot",true);
+% Play_audioLatencyMeasurement('Device',"Aggregate Device",'SampleRate',fs,'SamplesPerFrame',64,"Plot",true);
 % recordLoopbackAudio('Device',"Aggregate Device",'SampleRate',fs,'SamplesPerFrame',64,"Plot",true);
