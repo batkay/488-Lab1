@@ -1,6 +1,4 @@
 [mel_def, fs_def] = audioread("audio/Melon_default.wav");
-[mel_h, fs_h] = audioread("audio/Melon_deep.wav");
-[bad_def, fs_bad] = audioread("audio/badfeeling.wav");
 [mel_AQ, fs_AQ] = audioread("word_melon.wav"); %recorded melon just repeat one time
 [amb,fs_amb] = audioread("ambient_noise.wav");
 % 
@@ -27,8 +25,8 @@
 % spectro(mel_AQ,fs_AQ)
 % spectro(mel_def, fs_def);
 
-compare("ambient_noise.wav","audio/Melon_default.wav")
-computeROC("ambient_noise.wav","audio/Melon_default.wav");
+compare("word_melon.wav","audio/Melon_default.wav")
+
 %% Functions
  function [] = compare(inputArg2,inputArg1)    
     [x, Fs] = audioread(inputArg1);
@@ -95,8 +93,10 @@ function [FPR, TPR, thresholds] = computeROC(inputArg1, inputArg2)
     Y = Y(1:floor(end/2)+1);
     Z = Z(1:floor(end/2)+1);
     
-    [c, lags] = xcorr(abs(Y), abs(Z));
+    % Compute the cross-correlation
+    [c, lags] = xcorr(abs(Y), abs(Z), 'coeff');
     
+    % Maximum correlation value
     peak_corr = max(abs(c));
 
     % Generate a range of thresholds from minimum to maximum correlation observed
