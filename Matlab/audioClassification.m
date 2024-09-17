@@ -67,6 +67,7 @@ for i  = 1:5
         predictedValues((i - 1) * 3 + j) = c_strings(idx);
     end
 end
+figure;
 cm = confusionchart(trueValues, predictedValues);
 
 % [audio_2, fs_2] = audioread("audio/Wash_2.m4a");
