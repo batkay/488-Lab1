@@ -51,7 +51,7 @@ while ishandle(h) && toc < timeLimit
     ylim([-.3,.3]) 
     xlabel('t (s)'), ylabel('x(t)'), title('Audio stream')
     word = classify(y(:, i));
-    text(0, 0, word);
+    text(0.2, 0.2, word, "FontSize", 40);
     drawnow
 
 
