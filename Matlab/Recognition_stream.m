@@ -78,7 +78,7 @@ while ishandle(h) && toc < timeLimit
     y_unfiltered(:,i) = read(audioBuffer,fs,fs-adr.SamplesPerFrame);
 
     % Apply filter to isolate human voice
-    y = 10* filter(bpFilt, y_unfiltered(:,i));
+    y =  filter(bpFilt, y_unfiltered(:,i));
 
 
     % plot buffer (includes overlapping audio frames)
@@ -100,7 +100,7 @@ while ishandle(h) && toc < timeLimit
 
     % Word detection logic
     if (speech_power - old_psd > threshold)
-        word = classify(y,fs);  % Assuming classify is a valid function
+        word = classify(y);  % Assuming classify is a valid function
         word_detected = true; % Set word detection flag to true
         display_timer = toc; % Reset timer to current time
         disp("Word detected");
@@ -151,4 +151,4 @@ release(audioBuffer)
 disp("end recording")
 
 
-%% testin
+%% function
