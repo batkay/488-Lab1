@@ -1,0 +1,9 @@
+% [audio, fs] = audioread("audio_2/cats_chase_only_turtles_quickly.m4a");
+% [audio, fs] = audioread("audio_2/cats_quickly_chase_turtles_only.m4a");
+[audio, fs] = audioread("audio_2/turtles_quickly_chase_only_cats.m4a");
+% [audio, fs] = audioread("audio_2/Turtles_2.m4a");
+
+figure;
+detectSpeech(audio, fs, 'Window',hann(512));
+
+for 

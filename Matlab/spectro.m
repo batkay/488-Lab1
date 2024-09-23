@@ -1,7 +1,8 @@
-function[spec] = spectro(x, fs, windowSize, overlap, fftLen, windowType)
+function[spec, times, freq] = spectro(x, fs, sho, windowSize, overlap, fftLen, windowType)
 arguments
     x;
     fs;
+    sho = false;
     windowSize = 1000; % number of samples per window
     overlap = 0; % number of samples from previous window to use
     fftLen = windowSize; % how many samples to use in fft
@@ -32,6 +33,7 @@ while i + windowSize < N
     i = i + windowSize - overlap;
 end
 
+if sho
 figure;
 imagesc(times, freq, windows', 'CDataMapping','scaled');
 colormap('jet');
@@ -40,6 +42,7 @@ colorbar;
 xlabel("Time (s)");
 ylabel("Frequency (Hz)");
 title("Spectrogram");
+end
 
 spec = windows';
 

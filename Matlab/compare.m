@@ -18,8 +18,8 @@ end
 
     % s1 = spectro(data1, 48e3);
     % s2 = spectro(data2, 48e3);
-    s1 = abs(spectrogram(data1, hanning(1000)));
-    s2 = abs(spectrogram(data2, hanning(1000)));
+    s1 = abs(spectrogram(data1, hanning(1024)));
+    s2 = abs(spectrogram(data2, hanning(1024)));
 
     % [m,n] = size(s1);
     % [m1,n1] = size(s2);

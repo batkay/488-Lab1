@@ -46,12 +46,21 @@ while ishandle(h) && toc < timeLimit
     y(:,i) = read(audioBuffer,fs,fs-adr.SamplesPerFrame);
     
     % plot buffer (includes overlapping audio frames)
+    subplot(2, 1, 1)
     plot(t,y(:,i))
     axis tight
     ylim([-.3,.3]) 
     xlabel('t (s)'), ylabel('x(t)'), title('Audio stream')
     word = classify(y(:, i));
     text(0.2, 0.2, word, "FontSize", 40);
+    subplot(2, 1, 2)
+    [windows, times, freq] = spectro(y(:, i), fs);
+    imagesc(times, freq, windows, 'CDataMapping','scaled');
+    colormap('jet');
+    axis('xy');
+    colorbar;
+    xlabel("Time (s)");
+    ylabel("Frequency (Hz)");
     drawnow
 
 
