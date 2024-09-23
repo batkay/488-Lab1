@@ -1,0 +1,73 @@
+% function word = classify(audioIn)
+%     [melon, fs_melon] = audioread("audio/Melon_default.wav");
+%     melon = melon(:, 1);
+%     [vader, fs_vader] = audioread("audio/Vader.wav");
+%     vader = vader(:, 1);
+%     [bat, fs_bat] = audioread("audio/Bat.wav");
+%     bat = bat(:, 1);
+%     [drink, fs_drink] = audioread("audio/Drink.wav");
+%     drink = drink(:, 1);
+%     [wash, fs_wash] = audioread("audio/Wash.wav");
+%     wash = wash(:, 1);
+% 
+%     c_values = zeros(1, 5);
+%     c_strings = {'Bat', 'Drink', 'Melon', 'Vader', 'Wash'};
+% 
+%     c_values(1) = compare(bat, audioIn);
+%     c_values(2) = compare(drink, audioIn);
+%     c_values(3) = compare(melon, audioIn);
+%     c_values(4) = compare(vader, audioIn);
+%     c_values(5) = compare(wash, audioIn);
+% 
+%     [~, idx] = max(c_values);
+%     word = c_strings(idx);
+% 
+% end
+function word = classify(audioIn, fs_in)
+    % Read reference audio files and extract their MFCC features
+    [melon, fs_melon] = audioread("audio/Melon_default.wav");
+    melon_mfcc = extract_mfcc(melon, fs_melon);
+    
+    [vader, fs_vader] = audioread("audio/Vader.wav");
+    vader_mfcc = extract_mfcc(vader, fs_vader);
+    
+    [bat, fs_bat] = audioread("audio/Bat.wav");
+    bat_mfcc = extract_mfcc(bat, fs_bat);
+    
+    [drink, fs_drink] = audioread("audio/Drink.wav");
+    drink_mfcc = extract_mfcc(drink, fs_drink);
+    
+    [wash, fs_wash] = audioread("audio/Wash.wav");
+    wash_mfcc = extract_mfcc(wash, fs_wash);
+    
+    % Extract MFCC for input audio
+    audioIn_mfcc = extract_mfcc(audioIn, fs_in);
+    
+    % Initialize comparison values
+    c_values = zeros(1, 5);
+    c_strings = {'Bat', 'Drink', 'Melon', 'Vader', 'Wash'};
+    
+    
+    % If bat_mfcc is shorter, pad it with zeros
+    if len_bat < len_audioIn
+        % Pad with zeros to match length
+        bat_mfcc = [bat_mfcc, zeros(size(bat_mfcc, 1), len_audioIn - len_bat)];
+    elseif len_bat > len_audioIn
+        % If bat_mfcc is longer, truncate it
+        bat_mfcc = bat_mfcc(:, 1:len_audioIn);
+    end
+    % Compare MFCCs using Dynamic Time Warping (DTW)
+    c_values(1) = dtw(bat_mfcc, audioIn_mfcc);
+    c_values(2) = dtw(drink_mfcc, audioIn_mfcc);
+    c_values(3) = dtw(melon_mfcc, audioIn_mfcc);
+    c_values(4) = dtw(vader_mfcc, audioIn_mfcc);
+    c_values(5) = dtw(wash_mfcc, audioIn_mfcc);
+    
+    % Find the best match (lowest DTW distance)
+    [~, idx] = min(c_values);
+    word = c_strings(idx);
+end
+function mfcc_features = extract_mfcc(audio_signal, fs)
+    % Extract MFCC features from the input audio signal
+    mfcc_features = mfcc(audio_signal, fs, 'NumCoeffs', 13);  % Extract 13 MFCC coefficients
+end

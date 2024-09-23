@@ -1,4 +1,4 @@
-%% Adapted from DeepLearningSpeechRecognitionExample.m, Matlab 2020b
+%% Adapted from DeepLearningSpeechRecognition Example.m, Matlab 2020b
 
 % Modified to take FFT and PSD at end, used to measure noise for room
 % through microphone, noise through loopback, and noise for no connection
@@ -38,20 +38,34 @@ tic;
 i = 1;
 t = [0:fs-1]/fs; 
 
+old_psd = 0; %set the initial value of PSD to 0
+psd_array = [0, 0, 0]
+word = 0;
 while ishandle(h) && toc < timeLimit
 
     % Extract audio samples from the audio device and add to the buffer.
-    % [audioIn overrun(i)] = adr();
+    [audioIn overrun(i)] = adr();
     write(audioBuffer,audioIn);
-    y(:,i) = read(audioBuffer,fs,fs-adr.SamplesPerFrame);
+    y(:,i) = read(audioBuffer,fs,fs-adr.SamplesPerFrame); % real time audio read per frame
     
+    %check the occurence of the words
+
+    [~,pxx] = psd_plot.psd_calculation(y(:,i),fs);
+    speech_band = (f >= 300 & f <= 3400);
+    speech_power = sum(pxx(speech_band));
+    
+    if(old_psd - speech_power <-0.111)
+        word = y(:,i); 
+        disp("detected");
+    end  
+    old_psd = speech_power;
+    
+
     % plot buffer (includes overlapping audio frames)
     plot(t,y(:,i))
     axis tight
     ylim([-.3,.3]) 
     xlabel('t (s)'), ylabel('x(t)'), title('Audio stream')
-    drawnow
-
     i = i+1; 
 
 end
@@ -63,6 +77,7 @@ release(audioBuffer)
 
 
 %% testing
-Record_audioLatencyMeasurement('Device',"Aggregate Device",'SampleRate',fs,'SamplesPerFrame',64,"Plot",true);
+% Record_audioLatencyMeasurement('Device',"Aggregate Device",'SampleRate',fs,'SamplesPerFrame',64,"Plot",true);
 % Play_audioLatencyMeasurement('Device',"Aggregate Device",'SampleRate',fs,'SamplesPerFrame',64,"Plot",true);
 % recordLoopbackAudio('Device',"Aggregate Device",'SampleRate',fs,'SamplesPerFrame',64,"Plot",true);
+%% function 

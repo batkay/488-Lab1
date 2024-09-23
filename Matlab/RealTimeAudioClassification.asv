@@ -38,19 +38,42 @@ tic;
 i = 1;
 t = [0:fs-1]/fs; 
 
+old_psd = 0;
+delta_time = 5;
 while ishandle(h) && toc < timeLimit
-
+    
     % Extract audio samples from the audio device and add to the buffer.
-    % [audioIn overrun(i)] = adr();
+    [audioIn overrun(i)] = adr();
     write(audioBuffer,audioIn);
     y(:,i) = read(audioBuffer,fs,fs-adr.SamplesPerFrame);
     
     % plot buffer (includes overlapping audio frames)
+    subplot(2,1,1);
     plot(t,y(:,i))
     axis tight
     ylim([-.3,.3]) 
     xlabel('t (s)'), ylabel('x(t)'), title('Audio stream')
+    speech_power = sum(psd_plot.psd_calculation(y(:,i),fs));
+    word = "no word detected";
+    text(0.2, 0.2, word, "FontSize", 40);
+
+
+    if(speech_power - old_psd>0.001)
+        word = classify(y(:, i));
+        disp("detected");
+        
+    end 
+
+    old_psd = speech_power;
+
+    subplot(2,1,2);
+    plot(0:fs/length(y):fs/2,speech_power);
+    title("psd plot")
+    
+    
+    
     drawnow
+
 
     i = i+1; 
 
@@ -63,6 +86,6 @@ release(audioBuffer)
 
 
 %% testing
-Record_audioLatencyMeasurement('Device',"Aggregate Device",'SampleRate',fs,'SamplesPerFrame',64,"Plot",true);
+% Record_audioLatencyMeasurement('Device',"Aggregate Device",'SampleRate',fs,'SamplesPerFrame',64,"Plot",true);
 % Play_audioLatencyMeasurement('Device',"Aggregate Device",'SampleRate',fs,'SamplesPerFrame',64,"Plot",true);
 % recordLoopbackAudio('Device',"Aggregate Device",'SampleRate',fs,'SamplesPerFrame',64,"Plot",true);

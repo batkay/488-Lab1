@@ -38,24 +38,48 @@ tic;
 i = 1;
 t = [0:fs-1]/fs; 
 
-while ishandle(h) && toc < timeLimit
+old_psd = 0;
+delta_time = 5;
+flip = false;
 
+while ishandle(h) && toc < timeLimit
+    
     % Extract audio samples from the audio device and add to the buffer.
     [audioIn overrun(i)] = adr();
     write(audioBuffer,audioIn);
     y(:,i) = read(audioBuffer,fs,fs-adr.SamplesPerFrame);
     
     % plot buffer (includes overlapping audio frames)
+    subplot(2,1,1);
     plot(t,y(:,i))
     axis tight
     ylim([-.3,.3]) 
     xlabel('t (s)'), ylabel('x(t)'), title('Audio stream')
-    word = classify(y(:, i));
+    pxx =psd_plot.psd_calculation(y(:,i),fs);
+    speech_power = sum(pxx);
+    word = "no word detected";
+    
+
+    if(speech_power - old_psd>0.001)
+        word = classify(y(:, i));
+        disp("detected");
+        
+    end 
     text(0.2, 0.2, word, "FontSize", 40);
+        text(0.2, -0.2, num2str(speech_power), "FontSize", 40);
+
+    old_psd = speech_power;
+    freq =0:fs/length(y):fs/2;
+    subplot(2,1,2);
+    plot(freq,pxx);
+    title("psd plot");
+    ylim([-1 1])
+    
+    
+   
     drawnow
-
-
     i = i+1; 
+    flip = ~ flip;
 
 end
 % psd_plot(y(:,i - 1), fs);
