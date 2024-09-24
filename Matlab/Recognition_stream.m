@@ -14,12 +14,13 @@ close all;
 fs = 48e3; % sample frequency
 audioFrameRate = 32;
 dataPrecision = '16-bit integer';
-adr = audioDeviceReader( 'Device','Aggregate Device','SampleRate',fs,'SamplesPerFrame',floor(fs/audioFrameRate),'BitDepth',dataPrecision);
+adr = audioDeviceReader( 'Device','MacBook Pro Microphone','SampleRate',fs,'SamplesPerFrame',floor(fs/audioFrameRate),'BitDepth',dataPrecision);
 % 'Device','Aggregate Device',
 % note: other options available in audioDeviceReader, e.g., selection of audio device, driver
 
 % to see all devices,
 devR = getAudioDevices(adr)
+
 
 % Open question: how to control microphone gain?
 
@@ -46,6 +47,10 @@ psd_array = [0, 0, 0];
 word = "no word detected";
 disp("start recording")
 
+
+classificationDelay = .6;  % Delay in seconds before reclassifying
+lastClassificationTime = 0;  % Track when the last classification was done
+
 %filter range
 
 f_low = 200; % Lower cutoff frequency (300 Hz)
@@ -63,10 +68,10 @@ word_detected = false; % Flag for word detection
 word_display_duration = 0.5; % Duration (in seconds) to keep displaying the word
 display_timer = 0; % Timer to manage how long the word is displayed
 
-% testing audio
-[big, big_fs] = audioread("audio/bigAudio.wav");
-b = audioplayer(big,big_fs);
-play(b)
+% % testing audio
+% [big, big_fs] = audioread("audio/bigAudio.wav");
+% b = audioplayer(big,big_fs);
+% play(b)
 
 
 while ishandle(h) && toc < timeLimit
@@ -99,15 +104,15 @@ while ishandle(h) && toc < timeLimit
     threshold = max(min_threshold,adoptive_threshold);
 
     % Word detection logic
-    if (speech_power - old_psd > threshold)
+    if (speech_power - old_psd > threshold) && (toc - lastClassificationTime > classificationDelay)
         word = classify(y);  
-        word_detected = true; % Set word detection flag to true
-        display_timer = toc; % Reset timer to current time
+        word_detected = true;
+        display_timer = toc;
+        lastClassificationTime = toc;  % Update last classification time
         disp("Word detected");
     else
-        % Keep displaying the word for a certain duration after detection
         if toc - display_timer > word_display_duration
-            word_detected = false; % If time exceeds, reset the flag
+            word_detected = false;
         end
     end
 
@@ -126,14 +131,23 @@ while ishandle(h) && toc < timeLimit
     % freq =0:fs/length(y):fs/2;
     subplot(2,1,2);
 
-    win = hamming(window_size,'periodic');
-    percentOverlap = 50;
-    overlap = round(window_size*percentOverlap/100);
-    
-    mergeDuration = 0.44;
-    mergeDist = round(mergeDuration*fs);
+    % win = hamming(window_size,'periodic');
+    % percentOverlap = 50;
+    % overlap = round(window_size*percentOverlap/100);
+    % 
+    % mergeDuration = 0.44;
+    % mergeDist = round(mergeDuration*fs);
 
-    detectSpeech(y,fs,"Window",win,"OverlapLength",overlap,"MergeDistance",mergeDist)
+     
+    [idx,threshold] = detectSpeech(y,fs,"Window",win);
+    detectSpeech(y,fs,"Window",win)
+
+    % segmentStart = idx(i, 1);
+    % segmentEnd = idx(i, 2);
+    % speechSegment = y(segmentStart:segmentEnd);  % Extract the segment
+    % sound(speechSegment, fs);  % Play the segment
+    % pause(length(speechSegment)/fs + 0.5);  % Pause to allow the segment to finish plus a little extra time before the next
+    % word = [word,classify(speechSegment)];
     % plot(freq,pxx);
     % detectSpeech(y,fs);
     title("psd plot");

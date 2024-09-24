@@ -74,8 +74,6 @@ while ishandle(h) && toc < timeLimit
     plot(freq,pxx);
     title("psd plot");
     ylim([-1 1])
-    
-    
    
     drawnow
     i = i+1; 

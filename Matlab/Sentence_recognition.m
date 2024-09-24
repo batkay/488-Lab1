@@ -30,7 +30,7 @@ spectro(wash, fs_wash);
 title('Wash Audio');
 fs = 48e03;
 
-[bad,bad_Fs]= audioread("audio/Sentence.wav");
+[bad,bad_Fs]= audioread("audio/SentenceWdata.wav");
 bad = bad(:,1);
 figure;
 spectro(bad,bad_Fs);
@@ -44,7 +44,7 @@ y = filter(bpFilt, bad(:,1));
 disp(snr(y,fs));
 
 figure;
-window_size= 600;
+window_size= 900;
 % win = hamming(window_size,'periodic');
 % percentOverlap = 50;
 % overlap = round(window_size*percentOverlap/100);
@@ -55,12 +55,21 @@ window_size= 600;
 [idx,thresholds] =detectSpeech(y,fs,"Window",hamming(window_size,'periodic'));
 
 % Loop through each detected speech segment and play it
+word = [];
+
 for i = 1:size(idx, 1)
     segmentStart = idx(i, 1);
     segmentEnd = idx(i, 2);
     speechSegment = y(segmentStart:segmentEnd);  % Extract the segment
     sound(speechSegment, fs);  % Play the segment
     pause(length(speechSegment)/fs + 0.5);  % Pause to allow the segment to finish plus a little extra time before the next
+    word = [word,classify(speechSegment)];
 end
+figure
+disp(word);
 
 detectSpeech(y,fs,"Window",hamming(window_size,'periodic'));
+text(0.1,0,word);
+
+
+

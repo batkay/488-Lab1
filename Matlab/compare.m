@@ -63,7 +63,6 @@ end
 
     data1(abs(data1) < 0.1) = 0;
     data2(abs(data2) < 0.1) = 0;
-
     
 
     c1 = max(abs(xcorr(data1, data2, 'normalized')));
@@ -80,6 +79,7 @@ end
 
     c2 = max(abs(xcorr(fft1, fft2, 'normalized')));
     corr = corr + max(c2);
+    
     if display
         figure;
         display(lags, c);

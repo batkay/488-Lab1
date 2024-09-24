@@ -27,11 +27,11 @@ score_noizy_was = compare(noizy,wash);
 
 % Compile scores into an array
 scores = [score_amb_amb, score_amb_melon, score_amb_vader,score_amb_drink, score_amb_wash,score_noizy_was];
-filtered_scores = double(scores <= 0.5z);
+filtered_scores = double(scores >= 0.5);
 
 % scores = scores > 0.4;
 % Define labels for the ROC analysis (1 for target, 0 for non-target)
-labels = [0,0, 1, 1,1,1]; % Assuming 'amb' compared to itself is the positive class
+labels = [1,1, 0, 0,0,0]; % Assuming 'amb' compared to itself is the positive class
 
 % Calculate ROC curve data
 [X, Y, T, AUC] = perfcurve(labels, filtered_scores, 1);
@@ -44,32 +44,29 @@ ylabel('True positive rate');
 title('ROC for Classification');
 
 %% 
-% audio ={amb,melon,vader,wash,drink, noizy}
-% scores = zeros(1,6);
-% for audio
-% 
-%     y =  filter(bpFilt, y_unfiltered(:,i));
-%     % plot buffer (includes overlapping audio frames)
-%     subplot(2,1,1);
-%     plot(t,y)
-%     axis tight
-%     ylim([-.3,.3])
-%     xlabel('t (s)'), ylabel('x(t)'), title('Audio stream')
-%     [pxx, freq] = pwelch(y, hamming(window_size), [], [], fs);
-%     speech_power = max(pxx);
-%     % word = "no word detected";
-% 
-% 
-%     % Improved detection threshold based on dynamic conditions
-%     adoptive_threshold = mean(pxx) + 2 * std(pxx); % Adaptive threshold
-%     min_threshold = 1e-9;
-% 
-%     threshold = max(min_threshold,adoptive_threshold);
-% 
-%     % Word detection logic
-%     if (speech_power - old_psd > threshold)
-%         scores(i) = 1;
-%     else
-%         scores(i) = 0;
-%     end
-% end
+audio ={amb,melon,vader,wash,drink, noizy}
+scores = zeros(6,1)
+for audio
+    y =  filter(bpFilt, y_unfiltered(:,i));
+    % plot buffer (includes overlapping audio frames)
+    subplot(2,1,1);
+    plot(t,y)
+    axis tight
+    ylim([-.3,.3])
+    xlabel('t (s)'), ylabel('x(t)'), title('Audio stream')
+    [pxx, freq] = pwelch(y, hamming(window_size), [], [], fs);
+    speech_power = max(pxx);
+    % word = "no word detected";
+
+
+    % Improved detection threshold based on dynamic conditions
+    adoptive_threshold = mean(pxx) + 2 * std(pxx); % Adaptive threshold
+    min_threshold = 1e-9;
+
+    threshold = max(min_threshold,adoptive_threshold);
+
+    % Word detection logic
+    if (speech_power - old_psd > threshold)
+        scores
+    end
+end
