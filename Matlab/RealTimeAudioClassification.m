@@ -37,30 +37,60 @@ timeLimit = 10;
 tic;
 i = 1;
 t = [0:fs-1]/fs; 
-
+old_psd = 0;
+display_timer = 0; % Timer to manage how long the word is displayed
+word_display_duration = fs;
 while ishandle(h) && toc < timeLimit
 
     % Extract audio samples from the audio device and add to the buffer.
     [audioIn overrun(i)] = adr();
     write(audioBuffer,audioIn);
     y(:,i) = read(audioBuffer,fs,fs-adr.SamplesPerFrame);
-    
+
+    [pxx, freq] = pwelch(y(:, i), hamming(600), [], [], fs);
+    speech_power = max(pxx);
+    % word = "no word detected";
+
+
+    % Improved detection threshold based on dynamic conditions
+    adoptive_threshold = mean(pxx) + 2 * std(pxx); % Adaptive threshold
+    min_threshold = 1e-9;
+
+    threshold = max(min_threshold,adoptive_threshold);
+
+    % Word detection logic
+    if (speech_power - old_psd > threshold)
+        word = classify(y(:, i));  
+        word_detected = true; % Set word detection flag to true
+        display_timer = toc; % Reset timer to current time
+        disp("Word detected");
+    else
+        % Keep displaying the word for a certain duration after detection
+        if toc - display_timer > word_display_duration
+            word_detected = false; % If time exceeds, reset the flag
+        else
+            word = "No Word";
+        end
+    end
+    old_psd = speech_power;
+
     % plot buffer (includes overlapping audio frames)
     subplot(2, 1, 1)
     plot(t,y(:,i))
     axis tight
     ylim([-.3,.3]) 
     xlabel('t (s)'), ylabel('x(t)'), title('Audio stream')
-    word = classify(y(:, i));
+    % word = classify(y(:, i));
     text(0.2, 0.2, word, "FontSize", 40);
     subplot(2, 1, 2)
-    [windows, times, freq] = spectro(y(:, i), fs);
-    imagesc(times, freq, windows, 'CDataMapping','scaled');
-    colormap('jet');
-    axis('xy');
-    colorbar;
-    xlabel("Time (s)");
-    ylabel("Frequency (Hz)");
+    % [windows, times, freq] = spectro(y(:, i), fs);
+    % imagesc(times, freq, windows, 'CDataMapping','scaled');
+    % colormap('jet');
+    % axis('xy');
+    % colorbar;
+    % xlabel("Time (s)");
+    % ylabel("Frequency (Hz)");
+
     drawnow
 
 
