@@ -9,6 +9,24 @@ function word = classify(audioIn)
     drink = drink(:, 1);
     [wash, fs_wash] = audioread("audio/Wash.wav");
     wash = wash(:, 1);
+    % figure
+    % subplot(5,1,1);
+    % spectro(melon, fs_melon);
+    % title('Melon Audio');
+    % subplot(5,1,2);
+    % spectro(vader, fs_vader);
+    % title('Vader Audio');
+    % subplot(5,1,3);
+    % spectro(bat, fs_bat);
+    % title('Bat Audio');
+    % 
+    % subplot(5,1,4);
+    % spectro(drink, fs_drink);
+    % title('Drink Audio');
+    % 
+    % subplot(5,1,5);
+    % spectro(wash, fs_wash);
+    % title('Wash Audio');
 
     c_values = zeros(1, 5);
     c_strings = {'Bat', 'Drink', 'Melon', 'Vader', 'Wash'};

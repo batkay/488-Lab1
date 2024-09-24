@@ -61,8 +61,8 @@ end
     data1 = data1/max(data1);
     data2 = data2/max(data2);
 
-    data1(abs(data1) < 0.3) = 0;
-    data2(abs(data2) < 0.3) = 0;
+    data1(abs(data1) < 0.1) = 0;
+    data2(abs(data2) < 0.1) = 0;
 
     
 

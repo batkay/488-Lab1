@@ -42,7 +42,7 @@ i = 1;
 t = [0:fs-1]/fs;
 
 old_psd = 0; %set the initial value of PSD to 0
-psd_array = [0, 0, 0]
+psd_array = [0, 0, 0];
 word = "no word detected";
 disp("start recording")
 
@@ -57,17 +57,17 @@ bpFilt = designfilt('bandpassiir', 'FilterOrder', 6, ...
 % Visualize the frequency response of the filter
 % fvtool(bpFilt);
 
-window_size = round(1/audioFrameRate*fs);
+window_size = round(1/audioFrameRate*fs)*0.5;
 
 word_detected = false; % Flag for word detection
-word_display_duration = 0.6; % Duration (in seconds) to keep displaying the word
+word_display_duration = 0.5; % Duration (in seconds) to keep displaying the word
 display_timer = 0; % Timer to manage how long the word is displayed
 
-% % testing audio
-% [big, big_fs] = audioread("audio/bigAudio.wav");
-% b = audioplayer(big,big_fs);
-% play(b)
-% 
+% testing audio
+[big, big_fs] = audioread("audio/bigAudio.wav");
+b = audioplayer(big,big_fs);
+play(b)
+
 
 while ishandle(h) && toc < timeLimit
 
@@ -75,7 +75,7 @@ while ishandle(h) && toc < timeLimit
     [audioIn overrun(i)] = adr();
     write(audioBuffer,audioIn);
 
-    y_unfiltered(:,i) = read(audioBuffer,fs,fs-adr.SamplesPerFrame);
+    y_unfiltered(:,i) =5 *read(audioBuffer,fs,fs-adr.SamplesPerFrame);
 
     % Apply filter to isolate human voice
     y =  filter(bpFilt, y_unfiltered(:,i));
@@ -100,7 +100,7 @@ while ishandle(h) && toc < timeLimit
 
     % Word detection logic
     if (speech_power - old_psd > threshold)
-        word = classify(y);  % Assuming classify is a valid function
+        word = classify(y);  
         word_detected = true; % Set word detection flag to true
         display_timer = toc; % Reset timer to current time
         disp("Word detected");

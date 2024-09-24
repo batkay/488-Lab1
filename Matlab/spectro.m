@@ -32,7 +32,7 @@ while i + windowSize < N
     i = i + windowSize - overlap;
 end
 
-figure;
+% figure;
 imagesc(times, freq, windows', 'CDataMapping','scaled');
 colormap('jet');
 axis('xy');
