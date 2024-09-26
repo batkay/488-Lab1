@@ -14,7 +14,7 @@ close all;
 fs = 48e3; % sample frequency
 audioFrameRate = 32;
 dataPrecision = '16-bit integer';
-adr = audioDeviceReader( 'Device','MacBook Pro Microphone','SampleRate',fs,'SamplesPerFrame',floor(fs/audioFrameRate),'BitDepth',dataPrecision);
+adr = audioDeviceReader( 'Device','Aggregate Device','SampleRate',fs,'SamplesPerFrame',floor(fs/audioFrameRate),'BitDepth',dataPrecision);
 % 'Device','Aggregate Device',
 % note: other options available in audioDeviceReader, e.g., selection of audio device, driver
 
@@ -68,10 +68,10 @@ word_detected = false; % Flag for word detection
 word_display_duration = 0.5; % Duration (in seconds) to keep displaying the word
 display_timer = 0; % Timer to manage how long the word is displayed
 
-% % testing audio
-% [big, big_fs] = audioread("audio/bigAudio.wav");
-% b = audioplayer(big,big_fs);
-% play(b)
+% testing audio
+[big, big_fs] = audioread("audio/bigAudio.wav");
+b = audioplayer(big,big_fs);
+play(b)
 
 
 while ishandle(h) && toc < timeLimit
@@ -80,7 +80,7 @@ while ishandle(h) && toc < timeLimit
     [audioIn overrun(i)] = adr();
     write(audioBuffer,audioIn);
 
-    y_unfiltered(:,i) =5 *read(audioBuffer,fs,fs-adr.SamplesPerFrame);
+    y_unfiltered(:,i) =10 *read(audioBuffer,fs,fs-adr.SamplesPerFrame);
 
     % Apply filter to isolate human voice
     y =  filter(bpFilt, y_unfiltered(:,i));
@@ -131,7 +131,7 @@ while ishandle(h) && toc < timeLimit
     % freq =0:fs/length(y):fs/2;
     subplot(2,1,2);
 
-    % win = hamming(window_size,'periodic');
+    win = hamming(window_size,'periodic');
     % percentOverlap = 50;
     % overlap = round(window_size*percentOverlap/100);
     % 
